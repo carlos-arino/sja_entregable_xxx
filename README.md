@@ -1,7 +1,3 @@
-Aquí tienes el contenido convertido a formato **Markdown (.md)**, listo para ser copiado en un archivo `README.md` o en cualquier plataforma que soporte este formato (GitHub, Moodle, Notion, etc.).
-
-***
-
 # Problema Microcontroladores: Invernadero Inteligente
 
 ## Instrucciones de Selección del Problema
