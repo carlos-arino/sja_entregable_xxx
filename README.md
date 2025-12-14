@@ -30,7 +30,7 @@ Vamos a encender un entorno VS Code en la nube que ya tiene todo instalado.
 2. Ve a la pestaña **Codespaces**.
 3. Pulsa el botón verde **Create codespace on main**.
 4. **¡PACIENCIA!** Se abrirá una pestaña nueva. La primera vez tarda unos **5-7 minutos** en configurarse.
-5. Te pedirá si quieres instalar PlatformIO. Acepta e instala. Si no lo haces tendrás que hacerlo manualmente.
+5. Te pedirá si quieres instalar la extensión PlatformIO. Acepta e instala. Si no lo haces tendrás que hacerlo manualmente.
 
 ## Paso 3: Verificación de Instalación (¡IMPORTANTE!)
 Antes de seguir, debemos asegurarnos de que el "cerebro" (PlatformIO) se ha instalado bien.
