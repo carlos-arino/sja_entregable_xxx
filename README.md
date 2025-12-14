@@ -90,3 +90,5 @@ Si cierras la pestaña sin más, tus cambios no se guardan en la nube.
 * **Veo rayas rojas en el código:** Es normal al principio. PlatformIO está indexando. Pulsa el botón de compilar (✓) y desaparecerán.
 
 * **Me pide licencia al dar al Play:** No has completado el Paso 4. Ve a [wokwi.com/vscode](https://wokwi.com/vscode) y pega el código con <kbd>F1</kbd>.
+
+* **No encuentro el serial Monitor:** Aparece en el panel inferior en la pestaña terminal a la derecha *Wokwi Terminal*
