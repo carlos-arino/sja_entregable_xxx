@@ -1,117 +1,41 @@
+/* Ejercicio entregable 001
+ Deben de utilizar este archivo los alumnos con c<5, d<5, u>=5
+ siendo c,d,u las tres últimas cifras del DNI 22000cdu -W
+ Luminosidad y motor paso a paso con potenciometro
+ Para cambiar Luminosidad o haz click sobre el sensor NTC durante la simulacion
+ rellenar vuestro nombre y DNI
+ NOMBRE ALUMNO: XXXXX
+ DNI: XXXXX
+ ENLACE WOKWI: XXXXXXX
+*/
+#include <Stepper.h>
 #include <Arduino.h>
 
-#include <WiFi.h>
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
-#include <ArduinoJson.h>
-#include <PubSubClient.h>
+Stepper myStepper(200, 14, 27, 26, 25);
 
-LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
+const int potPin = 34; // Pin analógico para el potenciómetro
+const int luxPin = 35; // Pin analógico para el sensor de luminosidad
 
-// el NOMBRE debe de ser unico para cada uno
-const char* mqttServer = "broker.emqx.io";
-const int mqttPort = 1883;
-const char* jugador = "NOMBRE";
-bool nueva = 0, planto = 0, carta = 0;
-bool nueva_ant = 0, planto_ant = 0, carta_ant = 0;
-
-WiFiClient espClient;
-PubSubClient client(espClient);
-
-void PubMQTT(int estado)
-{   
-  char str[20];
-
-     client.publish("instrumentacion/blackjack", "{\"jugador\": \"Carlos\", \"accion\": \"nueva\"}");
- 
-  Serial.println(estado);
-}
-
-void lectura(char* topic, byte* payload, unsigned int length) 
+void setup()
 {
-  Serial.print(topic);
-  Serial.print(" : ");
-  char message[length+1]={0x00};
-
-  for(int i=0;i<length;i++)
-    message[i]=(char)payload[i];
-
-  message[length]=0x00;
-  Serial.println(message);
-  DynamicJsonDocument doc(1024);
-  deserializeJson(doc, message);
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("C: ");
-  const char* crup = doc["crupier"];
-  lcd.print(crup);
-  
- 
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  Serial.println("Hello, ESP32!");
+  myStepper.setSpeed(10);
 }
 
-void setup() {
-  Serial.begin(9600);
-  Serial.print("Connecting to WiFi");
-  WiFi.begin("Wokwi-GUEST", "", 6);
-  pinMode(25, INPUT_PULLUP);
-  pinMode(26, INPUT_PULLUP);
-  pinMode(33, INPUT_PULLUP);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(100);
-    Serial.print(".");
-  }
-  Serial.println(" Connected!");
-  lcd.init();
-  lcd.backlight();
-  lcd.setCursor(0, 0);
-  lcd.print("Connecting to ");
-  lcd.setCursor(0, 1);
-  lcd.print("MQTT...");
+void loop()
+{
+  // put your main code here, to run repeatedly:
 
-  client.setServer(mqttServer, mqttPort);
-  client.setCallback(lectura);
-  while (!client.connected())
-  {    Serial.print("Connecting to MQTT...");
-      if (client.connect("blackjack_NOMBRE" )) {
-          Serial.println("connected");
-          lcd.clear();
-          lcd.setCursor(0, 0);
-          lcd.print("LISTO");
-          lcd.setCursor(0, 1);
-          lcd.print("CONECTADO");
-      }
-      else
-        {  Serial.print("failed with state ");
-          Serial.print(client.state());
-          delay(2000);
-        }
-  }
-  client.subscribe("instrumentacion/NOMBRE");
-}
-
-void loop() {
-    nueva_ant = nueva;
-
-    nueva = !digitalRead(33);
-
-    if (!client.loop()) {
-      Serial.println("Desconectado");
-      while (!client.connected())
-      {    Serial.print("Connecting to MQTT...");
-          if (client.connect("blackjack_NOMBRE" )) {
-              Serial.println("connected");
-              client.subscribe("instrumentacion/NOMBRE");
-          }
-          else
-            {  Serial.print("failed with state ");
-              Serial.print(client.state());
-              delay(2000);
-            }
-      }
-    }
-    if ((nueva == 1)&&(nueva_ant == 0)) PubMQTT(1);
-
-    delay(100); 
+  myStepper.step(100);
+  delay(500);
+  Serial.print(analogRead(potPin)); // siempre posición 180 del potenciómetro
+  Serial.print(", ");
+  Serial.println(analogRead(luxPin));
+  myStepper.step(-100);
+  Serial.print(analogRead(potPin)); // siempre posición 0 del potenciómetro
+  Serial.print(", ");
+  Serial.println(analogRead(luxPin));
+  delay(500);
 }
