@@ -1,140 +1,92 @@
-# Problema Microcontroladores: Invernadero Inteligente
+# Guía de Prácticas: Simulación ESP32 en la Nube
+### Entorno VS Code + PlatformIO + Wokwi
 
-## Instrucciones de Selección del Problema
+**Departamento de Tecnología**
 
-Este problema tiene diferentes datos dependiendo del DNI del alumno. Se basa en el valor de las tres últimas cifras del DNI ($c, d, u$).
+## Introducción
+En este curso utilizaremos un entorno de desarrollo profesional en la nube. No necesitas instalar nada en tu ordenador. Usaremos **GitHub Codespaces** para programar y **Wokwi** para simular el hardware del ESP32.
 
-**Ejemplo:** DNI 20339950R -> **950**. En este caso $c=9, d=5, u=0$.
-
-Se comprueba si las centenas, decenas y unidades son iguales o mayores que 5 para asignar el código binario del problema (0 o 1):
-
-* Si **$c < 5$** -> El primer dígito es **0** (Control de Sombreado - Sensor Analógico).
-* Si **$c \ge 5$** -> El primer dígito es **1** (Control de Ventilación - Sensor Digital).
-* Si **$d < 5$** -> El segundo dígito es **0** (Motor Paso a Paso).
-* Si **$d \ge 5$** -> El segundo dígito es **1** (Motor DC).
-* Si **$u < 5$** -> El tercer dígito es **0** (Feedback por Encoder).
-* Si **$u \ge 5$** -> El tercer dígito es **1** (Feedback por Potenciómetro).
-
-En el ejemplo anterior (**950**): $c \ge 5$ (1), $d \ge 5$ (1), $u < 5$ (0). Se asignará el **Problema 110**.
-
-La entrega se realiza en el aula virtual con el código del archivo de extensión `.ino`. Este debe incluir el enlace a la simulación realizada en Wokwi.
+> [!IMPORTANT]
+> **Requisitos Previos**
+> * Tener una cuenta de GitHub activa (es gratuita).
+> * Enlace al repositorio
 
 ---
 
-## Problema 000
-Se quiere instrumentar el control de sombreado de un invernadero inteligente. Para ello se dispone de un sensor de luminosidad (LDR/Fotorresistencia) que entrega una señal analógica. El programa debe leer el valor analógico (ADC) y transformarlo a un porcentaje de luz de 0 a 100%.
+## Paso 1: Crear tu Proyecto (Copia la Plantilla)
+No trabajaremos sobre el código del repositorio, sino sobre tu propia copia.
 
-Posteriormente, se debe desplegar el **toldo** de forma proporcional: 0% de luz implica toldo recogido (0º) y 100% de luz implica toldo totalmente extendido (90º).
+1. Entra en el enlace del repositorio (arriba).
+2. Busca el botón verde **Use this template > Create a new repository**.
+3. **Repository name:** Ponle un nombre sin espacios (ej: `Ejercicio1-nombre-apellido`).
+4. Deja marcada la opción **Public** y pulsa **Create repository**.
 
-Para lograr este movimiento, el eje del toldo tiene conectado un **motor paso a paso** de 200 pulsos por vuelta. Para verificar la posición, se dispone de un **encoder absoluto de 4 bits** codificado en código Gray solidario al eje.
 
-De forma adicional, el programa debe publicar en el servidor MQTT **broker.emqx.io**:
-* Topic: `sja003/invernadero/123/luz` con el valor de luminosidad actual en porcentaje.
-* Topic: `sja003/invernadero/123/historico` con el array de las medias de las últimas 5 horas. Ejemplo: `"[10, 45, 80, 90, 65]"`.
 
-El número **123** del topic es un ejemplo; debéis sustituirlo por vuestras 3 últimas cifras del DNI.
+## Paso 2: Arrancar el Ordenador Virtual
+Vamos a encender un entorno VS Code en la nube que ya tiene todo instalado.
 
----
+1. En tu nuevo repositorio, pulsa el botón verde **<> Code**.
+2. Ve a la pestaña **Codespaces**.
+3. Pulsa el botón verde **Create codespace on main**.
+4. **¡PACIENCIA!** Se abrirá una pestaña nueva. La primera vez tarda unos **3-5 minutos** en configurarse.
 
-## Problema 001
-Se quiere instrumentar el control de sombreado de un invernadero inteligente. Para ello se dispone de un sensor de luminosidad (LDR/Fotorresistencia) que entrega una señal analógica. El programa debe leer el valor analógico (ADC) y transformarlo a un porcentaje de luz de 0 a 100%.
+## Paso 3: Verificación de Instalación (¡IMPORTANTE!)
+Antes de seguir, debemos asegurarnos de que el "cerebro" (PlatformIO) se ha instalado bien.
 
-Posteriormente, se debe desplegar el **toldo** de forma proporcional: 0% de luz implica toldo recogido (0º) y 100% de luz implica toldo totalmente extendido (90º).
+1. Mira la barra lateral izquierda. Debes ver el icono de una **Cabeza de Alien** 👽. 
+2. Si te aparece un aviso abajo a la derecha pidiendo **"Reload Now"**, púlsalo.
+3. Si no sale el aviso ni el Alien, pulsa <kbd>F5</kbd> en tu navegador para recargar la página y espera 1 minuto más sin tocar nada.
 
-Para lograr este movimiento, el eje del toldo tiene conectado un **motor paso a paso** de 200 pulsos por vuelta. Para verificar la posición, se dispone de un **potenciómetro** conectado al eje que mide la posición real de la estructura para asegurar que es correcta.
+## Paso 4: Activar el Simulador (Licencia Gratis)
+Para que Wokwi funcione, necesitas una licencia gratuita.
 
-De forma adicional, el programa debe publicar en el servidor MQTT **broker.emqx.io**:
-* Topic: `sja003/invernadero/128/luz` con el valor de luminosidad actual en porcentaje.
-* Topic: `sja003/invernadero/128/historico` con el array de las medias de las últimas 5 horas. Ejemplo: `"[10, 45, 80, 90, 65]"`.
+1. Abre esta web en otra pestaña: [https://wokwi.com/vscode](https://wokwi.com/vscode)
+2. Inicia sesión con GitHub y copia el código de licencia que aparece.
+3. Vuelve a la pestaña de VS Code (Codespace).
+4. Pulsa la tecla <kbd>F1</kbd>. Escribe: `Wokwi: Set License` y pulsa <kbd>Enter</kbd>.
+5. Pega el código y pulsa <kbd>Enter</kbd>.
 
-El número **128** del topic es un ejemplo; debéis sustituirlo por vuestras 3 últimas cifras del DNI.
+## Paso 5: Compilar y Simular
+¡Hora de probar si funciona!
 
----
+1. En el explorador de archivos (izquierda), abre `src/main.cpp`.
+2. Mira la barra inferior de VS Code. Busca el icono de un **Tick** (✓) y púlsalo para compilar. (Si no sale, espera un poco más al paso 3). 
+3. En la lista de archivos, haz clic en `diagram.json`.
+4. Se abrirá el esquema del ESP32. Pulsa el botón verde **Play** (▶️) encima del dibujo.
 
-## Problema 010
-Se quiere instrumentar el control de sombreado de un invernadero inteligente. Para ello se dispone de un sensor de luminosidad (LDR/Fotorresistencia) que entrega una señal analógica. El programa debe leer el valor analógico (ADC) y transformarlo a un porcentaje de luz de 0 a 100%.
+> **Resultado esperado:** Deberías ver la pantalla LCD encenderse con el mensaje de bienvenida y el ESP32 conectado mediante I2C.
 
-Posteriormente, se debe desplegar el **toldo** de forma proporcional: 0% de luz implica toldo recogido (0º) y 100% de luz implica toldo totalmente extendido (90º).
+## Paso 6: ¿Cómo modificar el circuito? (Estrategia Híbrida)
 
-Para lograr este movimiento, se utiliza un **motor de corriente continua** con su driver, que se controla mediante una señal PWM; la velocidad es proporcional a dicha tensión. Para verificar la posición, se dispone de un **encoder absoluto de 4 bits** codificado en código Gray solidario al eje.
+> [!WARNING]
+> La extensión gratuita de Wokwi para VS Code permite **simular** pero no **editar** visualmente (no puedes mover cables ni añadir componentes con el ratón).
 
-De forma adicional, el programa debe publicar en el servidor MQTT **broker.emqx.io**:
-* Topic: `sja003/invernadero/182/luz` con el valor de luminosidad actual en porcentaje.
-* Topic: `sja003/invernadero/182/historico` con el array de las medias de las últimas 5 horas. Ejemplo: `"[10, 45, 80, 90, 65]"`.
+Si necesitas añadir componentes nuevos (LEDs, botones, sensores) que no están en la plantilla, puedes hacer lo siguiente:
 
-El número **182** del topic es un ejemplo; debéis sustituirlo por vuestras 3 últimas cifras del DNI.
+1. Entra en la web [https://wokwi.com](https://wokwi.com) (no hace falta iniciar sesión).
+2. Crea un proyecto nuevo de ESP32 y diseña tu circuito visualmente (arrastra componentes y cables).
+3. En la web, busca la pestaña `diagram.json` (situada encima del editor de código).
+4. Copia todo el texto de ese archivo.
+5. Vuelve a tu VS Code, abre tu archivo local `diagram.json`, borra todo su contenido y pega el texto que traes de la web.
+6. Al dar al Play, VS Code simulará el nuevo circuito que diseñaste en la web.
 
----
+## Paso 7: Guardar y Terminar
+Si cierras la pestaña sin más, tus cambios no se guardan en la nube.
 
-## Problema 011
-Se quiere instrumentar el control de sombreado de un invernadero inteligente. Para ello se dispone de un sensor de luminosidad (LDR/Fotorresistencia) que entrega una señal analógica. El programa debe leer el valor analógico (ADC) y transformarlo a un porcentaje de luz de 0 a 100%.
-
-Posteriormente, se debe desplegar el **toldo** de forma proporcional: 0% de luz implica toldo recogido (0º) y 100% de luz implica toldo totalmente extendido (90º).
-
-Para lograr este movimiento, se utiliza un **motor de corriente continua** con su driver, que se controla mediante una señal PWM; la velocidad es proporcional a dicha tensión. Para verificar la posición, se dispone de un **potenciómetro** conectado al eje que mide la posición real de la estructura.
-
-De forma adicional, el programa debe publicar en el servidor MQTT **broker.emqx.io**:
-* Topic: `sja003/invernadero/189/luz` con el valor de luminosidad actual en porcentaje.
-* Topic: `sja003/invernadero/189/historico` con el array de las medias de las últimas 5 horas. Ejemplo: `"[10, 45, 80, 90, 65]"`.
-
-El número **189** del topic es un ejemplo; debéis sustituirlo por vuestras 3 últimas cifras del DNI.
-
----
-
-## Problema 100
-Se quiere instrumentar el sistema de ventilación de un invernadero. Para ello se dispone de un sensor de temperatura digital **DS18B20**. El programa debe comunicarse a través del bus OneWire para obtener la temperatura en grados Celsius (Rango de trabajo de 0ºC a 50ºC).
-
-Posteriormente, se debe cambiar la orientación de la **compuerta de ventilación** de forma proporcional: 0ºC implica compuerta cerrada (0º) y 50ºC implica compuerta totalmente abierta (90º).
-
-Para lograr este movimiento, la compuerta tiene conectada un **motor paso a paso** de 200 pulsos por vuelta. Para verificar la posición, se dispone de un **encoder absoluto de 4 bits** con codificación Gray conectado al eje.
-
-De forma adicional, el programa debe publicar en el servidor MQTT **broker.emqx.io**:
-* Topic: `sja003/invernadero/823/temperatura` con el valor de temperatura actual en ºC.
-* Topic: `sja003/invernadero/823/historico` con el array de las medias de las últimas 5 horas. Ejemplo: `"[20, 22, 25, 24, 21]"`.
-
-El número **823** del topic es un ejemplo; debéis sustituirlo por vuestras 3 últimas cifras del DNI.
+1. Haz clic en el icono de **Source Control** (izquierda, tercer icono).
+2. Escribe un mensaje (ej: "Práctica terminada").
+3. Pulsa el botón azul **Commit** y luego **Sync Changes**.
+4. Cuando termine de girar, ya puedes cerrar la pestaña.
 
 ---
 
-## Problema 101
-Se quiere instrumentar el sistema de ventilación de un invernadero. Para ello se dispone de un sensor de temperatura digital **DS18B20**. El programa debe comunicarse a través del bus OneWire para obtener la temperatura en grados Celsius (Rango de trabajo de 0ºC a 50ºC).
+## Solución de Problemas Frecuentes
 
-Posteriormente, se debe cambiar la orientación de la **compuerta de ventilación** de forma proporcional: 0ºC implica compuerta cerrada (0º) y 50ºC implica compuerta totalmente abierta (90º).
+* **No aparece el Alien (PlatformIO):** Es un error común de carga.
+    1. Pulsa <kbd>F1</kbd> y escribe: `Reload Window` (o pulsa <kbd>F5</kbd> en el navegador).
+    2. Al recargar, espera 2 minutos sin tocar nada hasta que salga.
 
-Para lograr este movimiento, la compuerta tiene conectada un **motor paso a paso** de 200 pulsos por vuelta. Para verificar la posición, se dispone de un **potenciómetro** conectado que mide la posición de la compuerta para asegurar que es correcta.
+* **Veo rayas rojas en el código:** Es normal al principio. PlatformIO está indexando. Pulsa el botón de compilar (✓) y desaparecerán.
 
-De forma adicional, el programa debe publicar en el servidor MQTT **broker.emqx.io**:
-* Topic: `sja003/invernadero/829/temperatura` con el valor de temperatura actual en ºC.
-* Topic: `sja003/invernadero/829/historico` con el array de las medias de las últimas 5 horas. Ejemplo: `"[20, 22, 25, 24, 21]"`.
-
-El número **829** del topic es un ejemplo; debéis sustituirlo por vuestras 3 últimas cifras del DNI.
-
----
-
-## Problema 110
-Se quiere instrumentar el sistema de ventilación de un invernadero. Para ello se dispone de un sensor de temperatura digital **DS18B20**. El programa debe comunicarse a través del bus OneWire para obtener la temperatura en grados Celsius (Rango de trabajo de 0ºC a 50ºC).
-
-Posteriormente, se debe cambiar la orientación de la **compuerta de ventilación** de forma proporcional: 0ºC implica compuerta cerrada (0º) y 50ºC implica compuerta totalmente abierta (90º).
-
-Para lograr este movimiento, la compuerta tiene conectada un **motor de continua** con su driver, controlado mediante señal PWM (velocidad proporcional a la tensión). Para verificar la posición, se dispone de un **encoder absoluto de 4 bits** con codificación Gray conectado al eje.
-
-De forma adicional, el programa debe publicar en el servidor MQTT **broker.emqx.io**:
-* Topic: `sja003/invernadero/950/temperatura` con el valor de temperatura actual en ºC.
-* Topic: `sja003/invernadero/950/historico` con el array de las medias de las últimas 5 horas. Ejemplo: `"[20, 22, 25, 24, 21]"`.
-
-El número **950** del topic es un ejemplo; debéis sustituirlo por vuestras 3 últimas cifras del DNI.
-
----
-
-## Problema 111
-Se quiere instrumentar el sistema de ventilación de un invernadero. Para ello se dispone de un sensor de temperatura digital **DS18B20**. El programa debe comunicarse a través del bus OneWire para obtener la temperatura en grados Celsius (Rango de trabajo de 0ºC a 50ºC).
-
-Posteriormente, se debe cambiar la orientación de la **compuerta de ventilación** de forma proporcional: 0ºC implica compuerta cerrada (0º) y 50ºC implica compuerta totalmente abierta (90º).
-
-Para lograr este movimiento, la compuerta tiene conectada un **motor de continua** con su driver, controlado mediante señal PWM (velocidad proporcional a la tensión). Para verificar la posición, se dispone de un **potenciómetro** conectado que mide la posición de la compuerta para asegurar que es correcta.
-
-De forma adicional, el programa debe publicar en el servidor MQTT **broker.emqx.io**:
-* Topic: `sja003/invernadero/988/temperatura` con el valor de temperatura actual en ºC.
-* Topic: `sja003/invernadero/988/historico` con el array de las medias de las últimas 5 horas. Ejemplo: `"[20, 22, 25, 24, 21]"`.
-
-El número **988** del topic es un ejemplo; debéis sustituirlo por vuestras 3 últimas cifras del DNI.
+* **Me pide licencia al dar al Play:** No has completado el Paso 4. Ve a [wokwi.com/vscode](https://wokwi.com/vscode) y pega el código con <kbd>F1</kbd>.
